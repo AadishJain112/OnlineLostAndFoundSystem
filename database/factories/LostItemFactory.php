@@ -15,18 +15,36 @@ class LostItemFactory extends Factory
 {
     protected $model = LostItem::class;
 
+    private static array $itemTitles = [
+        'Black leather wallet',
+        'Silver wrist watch',
+        'Blue backpack',
+        'Wireless headphones',
+        'Android smartphone',
+        'Laptop computer',
+        'Travel passport holder',
+        'Designer sunglasses',
+        'Leather jacket',
+        'Canvas tote bag',
+        'Waterproof sports watch',
+        'Bluetooth speaker',
+        'Classic fountain pen',
+        'Portable power bank',
+        'Digital camera',
+    ];
+
     public function definition(): array
     {
-        $title = fake()->sentence(3);
+        $title = fake()->randomElement(self::$itemTitles);
 
         return [
             'user_id' => User::factory(),
             'category_id' => Category::factory(),
-            'title' => rtrim($title, '.'),
-            'slug' => Str::slug($title).'-'.Str::lower(Str::random(6)),
+            'title' => $title,
+            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
             'description' => fake()->paragraph(3),
             'date_lost' => fake()->dateTimeBetween('-30 days', 'now'),
-            'location' => fake()->city().', '.fake()->streetName(),
+            'location' => fake()->city() . ', ' . fake()->streetName(),
             'latitude' => fake()->latitude(),
             'longitude' => fake()->longitude(),
             'contact_preference' => fake()->randomElement(ContactPreference::cases())->value,
