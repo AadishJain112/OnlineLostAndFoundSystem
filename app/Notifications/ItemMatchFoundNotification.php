@@ -2,9 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Enums\ContactPreference;
 use App\Models\ItemMatch;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\AnonymousNotifiable;
@@ -49,33 +47,27 @@ class ItemMatchFoundNotification extends Notification implements ShouldQueue
 
     /**
      * Determine which channels to use based on who is being notified.
+     *
+     * Rules:
+     *  - AnonymousNotifiable (external contact_email) → mail only
+     *  - All real Users → mail + database, always
+     *
+     * We always send mail to the user's account email.
+     * The listener additionally sends a separate anonymous mail when
+     * contact_email differs from the account email, so the reporter's
+     * preferred address also gets notified.
      */
     public function via(object $notifiable): array
     {
-        // Anonymous notifiable = external contact_email address.
-        // Only send mail; there is no database record to write to.
+        // Anonymous notifiable = external contact_email address routed
+        // directly via Notification::route('mail', ...).
+        // No database record exists for anonymous notifiables.
         if ($notifiable instanceof AnonymousNotifiable) {
             return ['mail'];
         }
 
-        if ($notifiable instanceof User) {
-            $item = $this->perspective === 'lost'
-                ? $this->match->lostItem
-                : $this->match->foundItem;
-
-            // User chose email contact preference AND supplied a contact_email.
-            // The listener sends a separate anonymous mail to that address,
-            // so here we only write the in-app (database) notification to
-            // avoid sending a second email to the user's account address.
-            if (
-                $item->contact_preference === ContactPreference::Email
-                && ! empty($item->contact_email)
-            ) {
-                return ['database'];
-            }
-        }
-
-        // Default: send both an account email and an in-app notification.
+        // All real users always get both an account email AND an in-app
+        // database notification, regardless of their contact_preference.
         return ['mail', 'database'];
     }
 

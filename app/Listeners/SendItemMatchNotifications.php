@@ -82,15 +82,14 @@ class SendItemMatchNotifications implements ShouldQueue
         }
 
         // ── Anonymous email: lost-item contact_email ──────────────────────────
-        // Sent only when the reporter chose "email" contact preference AND
-        // supplied a contact_email that differs from their account email.
-        // The notification's via() already returns ['database'] for these
-        // users, so no duplicate account-email is sent.
+        // Only fires when contact_email is a DIFFERENT address from the user's
+        // account email. If they're the same, the user->notify() call above
+        // already sent mail to that address via the 'mail' channel.
         $lostItem = $match->lostItem;
         if (
             $lostItem->contact_preference === ContactPreference::Email
             && ! empty($lostItem->contact_email)
-            && $lostItem->contact_email !== $lostUser->email
+            && strtolower($lostItem->contact_email) !== strtolower($lostUser->email)
         ) {
             Notification::route('mail', $lostItem->contact_email)
                 ->notify(new ItemMatchFoundNotification($match, 'lost'));
@@ -101,7 +100,7 @@ class SendItemMatchNotifications implements ShouldQueue
         if (
             $foundItem->contact_preference === ContactPreference::Email
             && ! empty($foundItem->contact_email)
-            && $foundItem->contact_email !== $foundUser->email
+            && strtolower($foundItem->contact_email) !== strtolower($foundUser->email)
         ) {
             Notification::route('mail', $foundItem->contact_email)
                 ->notify(new ItemMatchFoundNotification($match, 'found'));
