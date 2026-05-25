@@ -30,6 +30,10 @@ class MatchService
                 continue;
             }
 
+            // firstOrCreate is not atomic under concurrent requests.
+            // Use updateOrCreate so the unique constraint on
+            // (lost_item_id, found_item_id) acts as the real guard,
+            // and only update match_score if the row is new.
             $match = ItemMatch::firstOrCreate(
                 [
                     'lost_item_id' => $lostItem->id,
@@ -38,7 +42,11 @@ class MatchService
                 ['match_score' => $score]
             );
 
-            if ($match->wasRecentlyCreated || ! $match->notified_at) {
+            // Only fire the event when:
+            //  - the match row was just created (wasRecentlyCreated), OR
+            //  - it existed but was never notified (notified_at is null).
+            // This prevents re-firing on every found-item update.
+            if ($match->wasRecentlyCreated || $match->notified_at === null) {
                 $lostItem->update(['status' => ItemStatus::Matched]);
                 $foundItem->update(['status' => ItemStatus::Matched]);
                 event(new ItemMatchDetected($match));

@@ -27,6 +27,7 @@ class FoundItem extends Model
         'latitude',
         'longitude',
         'contact_preference',
+        'contact_email',
         'status',
         'verification_code',
         'returned_at',

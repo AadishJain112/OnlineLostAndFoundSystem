@@ -27,6 +27,7 @@ class LostItem extends Model
         'latitude',
         'longitude',
         'contact_preference',
+        'contact_email',
         'status',
         'verification_code',
         'recovered_at',

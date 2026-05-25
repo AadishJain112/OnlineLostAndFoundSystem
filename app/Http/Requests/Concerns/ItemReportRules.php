@@ -14,6 +14,7 @@ trait ItemReportRules
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
             'contact_preference' => ['required', 'in:email,phone,platform'],
+            'contact_email' => ['required_if:contact_preference,email', 'nullable', 'email', 'max:255'],
             'images' => ['nullable', 'array', 'max:5'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:4096'],
         ];
@@ -28,6 +29,8 @@ trait ItemReportRules
             'description.required' => 'Please describe the item.',
             'description.min' => 'Description must be at least 10 characters.',
             'location.required' => 'Please specify where the item was lost or found.',
+            'contact_email.required_if' => 'Please provide an email address when email contact is selected.',
+            'contact_email.email' => 'Please provide a valid email address.',
             'images.*.image' => 'Each upload must be a valid image file.',
             'images.*.max' => 'Each image may not be larger than 4MB.',
         ];

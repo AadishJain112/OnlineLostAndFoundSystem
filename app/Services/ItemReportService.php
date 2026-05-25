@@ -13,7 +13,8 @@ class ItemReportService
     public function __construct(
         protected ImageUploadService $imageUploadService,
         protected MatchService $matchService,
-    ) {}
+    ) {
+    }
 
     public function createLost(User $user, array $data, array $images = []): LostItem
     {
@@ -53,7 +54,7 @@ class ItemReportService
             'date_lost' => $data['date_lost'],
         ]);
 
-        if (! empty($images)) {
+        if (!empty($images)) {
             $this->imageUploadService->storeMany($item, $images, 'lost-items');
         }
 
@@ -67,7 +68,7 @@ class ItemReportService
             'date_found' => $data['date_found'],
         ]);
 
-        if (! empty($images)) {
+        if (!empty($images)) {
             $this->imageUploadService->storeMany($item, $images, 'found-items');
         }
 
@@ -78,7 +79,7 @@ class ItemReportService
 
     private function basePayload(array $data, ?string $existingSlug = null): array
     {
-        $slug = $existingSlug ?? Str::slug($data['title']).'-'.Str::lower(Str::random(6));
+        $slug = $existingSlug ?? Str::slug($data['title']) . '-' . Str::lower(Str::random(6));
 
         return [
             'category_id' => $data['category_id'],
@@ -89,6 +90,7 @@ class ItemReportService
             'latitude' => $data['latitude'] ?? null,
             'longitude' => $data['longitude'] ?? null,
             'contact_preference' => $data['contact_preference'] ?? 'platform',
+            'contact_email' => $data['contact_preference'] === 'email' ? ($data['contact_email'] ?? null) : null,
         ];
     }
 }
