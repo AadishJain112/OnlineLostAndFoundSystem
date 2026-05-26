@@ -66,7 +66,7 @@
                     <form method="POST" action="{{ route('lost-items.bookmark', $item) }}">@csrf
                         <x-ui.btn type="submit" variant="secondary" class="w-full justify-center">⭐ Bookmark</x-ui.btn>
                     </form>
-                    <x-ui.btn variant="primary" :href="route('messages.create', ['receiver_id' => $item->user_id, 'lost_item_id' => $item->id])" class="w-full justify-center">Contact reporter</x-ui.btn>
+                    <x-ui.btn variant="primary" :href="route('messages.create', ['receiver_id' => $item->user_id, 'lost_item_id' => $item->id])" class="w-full justify-center">✉️ Contact reporter</x-ui.btn>
                     @can('update', $item)
                         <x-ui.btn variant="secondary" :href="route('lost-items.edit', $item)" class="w-full justify-center">Edit report</x-ui.btn>
                         <form method="POST" action="{{ route('lost-items.recovered', $item) }}">@csrf

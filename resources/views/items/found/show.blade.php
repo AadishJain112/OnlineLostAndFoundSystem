@@ -52,7 +52,7 @@
             @auth
                 <x-ui.glass-panel class="space-y-3">
                     <form method="POST" action="{{ route('found-items.bookmark', $item) }}">@csrf<x-ui.btn type="submit" variant="secondary" class="w-full justify-center">⭐ Bookmark</x-ui.btn></form>
-                    <x-ui.btn variant="primary" :href="route('messages.create', ['receiver_id' => $item->user_id, 'found_item_id' => $item->id])" class="w-full justify-center">Contact reporter</x-ui.btn>
+                    <x-ui.btn variant="primary" :href="route('messages.create', ['receiver_id' => $item->user_id, 'found_item_id' => $item->id])" class="w-full justify-center">✉️ Contact reporter</x-ui.btn>
                     @can('update', $item)
                         <x-ui.btn :href="route('found-items.edit', $item)" variant="secondary" class="w-full justify-center">Edit</x-ui.btn>
                         <form method="POST" action="{{ route('found-items.returned', $item) }}">@csrf<x-ui.btn type="submit" variant="success" class="w-full justify-center">Mark returned</x-ui.btn></form>
